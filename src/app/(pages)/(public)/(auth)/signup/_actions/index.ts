@@ -1,13 +1,9 @@
 "use server";
 
 import { Argon2id } from "oslo/password";
-import { cookies } from "next/headers";
-import { generateRandomString, alphabet } from "oslo/crypto";
-import { TimeSpan, createDate } from "oslo";
 
 import prisma from "@/helpers/db";
 import { SignupSchema, signupSchema } from "../_schemas";
-import { lucia } from "@/lucia";
 import { SignupActionError, SignupActionSuccess } from "../types";
 
 type SignupActionReturnType = SignupActionSuccess | SignupActionError;
@@ -59,13 +55,4 @@ export async function signupAction(
       errors: { root: err?.message ?? "Internal Server Error" },
     };
   }
-}
-
-async function generateEmailVerificationCode(userId: string): Promise<string> {
-  // await prisma.emailVerification.delete({ where: { userId } });
-  const code = generateRandomString(8, alphabet("0-9"));
-  await prisma.emailVerification.create({
-    data: { userId, code, expiresAt: createDate(new TimeSpan(15, "m")) },
-  });
-  return code;
 }
