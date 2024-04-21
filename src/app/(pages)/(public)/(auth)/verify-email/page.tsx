@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 import {
@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { sendVerificationCodeAction } from "./_actions";
+import { sendVerificationCodeAction, verifyCodeAction } from "./_actions";
 import {
   InputOTP,
   InputOTPGroup,
@@ -46,11 +46,7 @@ export default function VerifyEmailPage() {
   async function onSubmit(values: SendVerificationCodeSchema) {
     const response = await sendVerificationCodeAction(values);
     if (!response.success) {
-      let message = "Some error occured";
-      console.log({ m: response.errors.root });
-      if (response.errors.root?.includes("verification code too many times")) {
-        message = response.errors.root;
-      }
+      const message = response.errors.root ?? "Some error occured";
       toast.error(message, { position: "bottom-center" });
       return;
     }
@@ -110,6 +106,7 @@ export default function VerifyEmailPage() {
 
 function EnterVerificationCode({ email }: { email: string }) {
   const TIMER = 30;
+  const router = useRouter();
   const [disabled, setDisabled] = useState(false);
   const [countdown, setCountdown] = useState(TIMER);
   const form = useForm<SubmitCodeSchema>({
@@ -118,20 +115,27 @@ function EnterVerificationCode({ email }: { email: string }) {
       code: "",
     },
   });
+  const { watch } = form;
+  const enteredCode = watch("code");
 
-  async function onSubmit(values: SubmitCodeSchema) {}
+  async function onSubmit(values: SubmitCodeSchema) {
+    const response = await verifyCodeAction(values, email);
+    if (!response.success) {
+      toast.error(response.errors.root, { position: "bottom-center" });
+      return;
+    }
+    toast.success(response.message, { position: "bottom-center" });
+    router.replace("/projects");
+  }
 
   async function resendVerificationCode() {
     const response = await sendVerificationCodeAction({ email });
     if (!response.success) {
-      let message = "Some error occured";
-      console.log({ m: response.errors.root });
-      if (response.errors.root?.includes("verification code too many times")) {
-        message = response.errors.root;
-      }
+      const message = response.errors.root ?? "Some error occured";
       toast.error(message, { position: "bottom-center" });
       return;
     }
+    form.reset();
     setDisabled(true);
     setCountdown(TIMER);
     const timer = setInterval(() => {
@@ -196,7 +200,13 @@ function EnterVerificationCode({ email }: { email: string }) {
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={
+                !(enteredCode.length === 8) || form.formState.isSubmitting
+              }
+            >
               Continue
             </Button>
           </form>

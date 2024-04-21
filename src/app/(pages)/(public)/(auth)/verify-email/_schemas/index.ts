@@ -1,3 +1,4 @@
+import { ErrorResponse, SuccessResponse } from "@/types";
 import { z } from "zod";
 
 export const sendVerificationCodeSchema = z.object({
@@ -18,3 +19,13 @@ export const submitCodeSchema = z.object({
 });
 
 export type SubmitCodeSchema = z.infer<typeof submitCodeSchema>;
+
+type VerifyCodeActionError = Omit<ErrorResponse, "errors"> & {
+  errors: {
+    root?: string;
+  };
+};
+
+export type VerifyCodeActionReturnType =
+  | SuccessResponse
+  | VerifyCodeActionError;
