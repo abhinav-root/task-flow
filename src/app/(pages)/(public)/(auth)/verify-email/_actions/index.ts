@@ -75,7 +75,6 @@ export async function verifyCodeAction(
   }
 
   const user = await findUserByEmail(email);
-  console.log({ user });
   if (!user) {
     return {
       success: false,
@@ -88,7 +87,6 @@ export async function verifyCodeAction(
   const emailVerification = await prisma.emailVerification.findUnique({
     where: { userId: user.id },
   });
-  console.log({ emailVerification });
   if (!emailVerification) {
     return {
       success: false,

@@ -64,7 +64,7 @@ export default function VerifyEmailPage() {
           {!isCodeSent ? (
             <div>
               <div className="mb-10">
-                <p className="text-gray-600 text-sm text-center">
+                <p className="text-gray-600 text-sm text-center dark:text-gray-300">
                   To continue using Task Flow, please verify your email address
                 </p>
               </div>
