@@ -22,6 +22,7 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 import { signupSchema, SignupSchema } from "../_schemas";
 import { signupAction } from "../_actions";
 import LinkToVerifyEmail from "./link-to-verify-email";
+import Link from "next/link";
 
 export default function SignupForm() {
   const [registeredEmail, setRegisteredEmail] = useState("");
@@ -125,6 +126,7 @@ export default function SignupForm() {
             )}
             Create Account
           </Button>
+          <p className="text-center text-gray-600 text-sm dark:text-gray-300">Already have an account? <Link href="/login" className="hover:underline text-blue-500">Login</Link></p>
         </form>
       </Form>
     </>
