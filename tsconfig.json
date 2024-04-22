@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(pages)/(public)/(auth)/verify-email"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(pages)/(public)/(auth)/verify-email", "src/emails/email-verification.tsx"],
   "exclude": ["node_modules"]
 }

@@ -2,6 +2,7 @@
 
 import { generateRandomString, alphabet } from "oslo/crypto";
 import { TimeSpan, createDate } from "oslo";
+import { renderAsync, render } from "@react-email/render";
 
 import {
   SendVerificationCodeSchema,
@@ -16,6 +17,11 @@ import { sendVerificationCodeLimiter } from "@/helpers/rate-limiter";
 import { IP, findUserByEmail } from "@/helpers/actions";
 import { lucia } from "@/lucia";
 import { cookies } from "next/headers";
+import transport from "@/helpers/mailer";
+import {
+  getEmailVerificationHtml,
+  getEmailVerificationText,
+} from "@/emails/email-verification";
 
 // Send Verification Code
 export async function sendVerificationCodeAction(
@@ -51,7 +57,16 @@ export async function sendVerificationCodeAction(
         };
       }
       const code = await generateEmailVerificationCode(user.id);
-      console.log({ code });
+      // Send Verification Code to user
+
+      try {
+        await sendVerificationCodeViaEmail(user.username, user.email, code);
+      } catch (err) {
+        return {
+          success: false,
+          errors: { root: "Failed to send verification code" },
+        };
+      }
     }
 
     return { success: true, message: "Verification Code Sent" };
@@ -90,7 +105,9 @@ export async function verifyCodeAction(
   if (!emailVerification) {
     return {
       success: false,
-      errors: { root: "The code is invalid or expired. Resend the code and try again", },
+      errors: {
+        root: "The code is invalid or expired. Resend the code and try again",
+      },
     };
   }
   const currentTime = new Date();
@@ -140,4 +157,22 @@ async function generateEmailVerificationCode(userId: string): Promise<string> {
     },
   });
   return code;
+}
+
+async function sendVerificationCodeViaEmail(
+  username: string,
+  email: string,
+  code: string
+) {
+  const html = await getEmailVerificationHtml(username, code);
+  const text = await getEmailVerificationText(username, code);
+
+  const message = {
+    to: email,
+    subject: "Task Flow Email Verification Code",
+    text,
+    html,
+  };
+
+  await transport.sendMail(message);
 }

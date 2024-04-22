@@ -89,8 +89,8 @@ export default function VerifyEmailPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full">
-                    Send Verification Code
+                  <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? "Sending" : "Send Verification Code"}
                   </Button>
                 </form>
               </Form>
