@@ -1,7 +1,11 @@
+import Link from "next/link";
+
 export default function Logo() {
   return (
-    <span className="uppercase text-blue-500 text-lg p-1 font-black">
-      task flow
+    <span className="uppercase text-blue-500 text-xl font-black">
+      <Link href="/">
+        task flow
+      </Link>
     </span>
   );
 }

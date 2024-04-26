@@ -21,6 +21,7 @@ model User {
   password          String
   sessions          Session[]
   EmailVerification EmailVerification?
+  projects          Project[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -45,4 +46,29 @@ model EmailVerification {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id      String      @id @default(cuid())
+  name    String
+  userId  String
+  creator User        @relation(references: [id], fields: [userId], onDelete: Cascade)
+  boards  Board[]
+  role    ProjectRole
+  starred Boolean     @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Board {
+  id        String  @id @default(cuid())
+  name      String
+  projectId String
+  project   Project @relation(references: [id], fields: [projectId], onDelete: Cascade)
+}
+
+enum ProjectRole {
+  OWNER
+  MEMBER
 }

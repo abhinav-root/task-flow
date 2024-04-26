@@ -27,7 +27,7 @@ export default function EmailVerificationTemplate({
       <Tailwind>
         <Body className="bg-white my-auto mx-auto font-sans px-2">
           <Container>
-            <Text className="bg-white font-bold text-3xl text-center text-blue-500 uppercase">
+            <Text className="bg-white font-extrabold text-3xl text-center text-blue-500 uppercase">
               Task Flow
             </Text>
             <Section className="bg-blue-500 py-4">
